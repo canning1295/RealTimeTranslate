@@ -220,7 +220,7 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 
 ## Checklist
 
-- [ ] Set up project structure and basic SwiftUI app for iOS/macOS.
+ - [x] Set up project structure and basic SwiftUI app for iOS/macOS.
 - [ ] Implement audio capture with VAD and chunking of speech.
 - [ ] Integrate Whisper API for transcription of each audio chunk.
 - [ ] Implement translation via GPT-4o Mini with streaming response parsing.
