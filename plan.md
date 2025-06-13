@@ -239,3 +239,16 @@ Initial implementation includes:
 * Basic SwiftUI app skeleton.
 * `AudioCaptureManager` providing microphone capture with simple VAD and chunk publishing.
 * Skeleton `TranslationService` outlining Whisper transcription and GPT-based translation methods.
+
+## Next Steps
+
+1. Implement network layer for Whisper API including multipart upload of audio files.
+2. Streamline translation pipeline with real `URLSession` server-sent event parsing for GPT responses.
+3. Bind results to a dedicated view model so `ContentView` updates in real time.
+4. Develop `TextToSpeechManager` to play and store synthesized speech audio.
+5. Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.
+6. Create a settings screen for API key entry and language selection.
+7. Build a history interface showing past sessions with playback controls.
+8. Add robust error handling and retry logic around all network calls.
+9. Polish the interface with waveform visualization and platform-specific design tweaks.
+10. Perform full end-to-end testing on both iOS and macOS.
