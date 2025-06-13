@@ -49,7 +49,7 @@ private struct SessionDetailView: View {
             }
             .padding(.vertical, 4)
         }
-        .navigationTitle(session.timestamp, format: .dateTime)
+        .navigationTitle(Text(session.timestamp, format: .dateTime))
     }
 
     private func play(url: URL) {
