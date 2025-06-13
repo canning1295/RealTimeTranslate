@@ -101,7 +101,9 @@ final class TranslationService: ObservableObject {
 
         request.httpBody = body
 
+        print("[TranslationService] transcribing audio at \(audioURL)")
         let (data, response) = try await data(for: request)
+        print("[TranslationService] transcription HTTP status \((response as? HTTPURLResponse)?.statusCode ?? -1)")
 
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
             throw URLError(.badServerResponse)
@@ -109,6 +111,7 @@ final class TranslationService: ObservableObject {
 
         struct WhisperResponse: Decodable { let text: String }
         let decoded = try JSONDecoder().decode(WhisperResponse.self, from: data)
+        print("[TranslationService] transcription result: \(decoded.text)")
         return decoded.text
     }
 
@@ -122,6 +125,7 @@ final class TranslationService: ObservableObject {
                 continuation.finish()
                 return
             }
+            print("[TranslationService] translating text: \(text)")
             let url = URL(string: "https://api.openai.com/v1/chat/completions")!
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
@@ -148,6 +152,7 @@ final class TranslationService: ObservableObject {
             let task = Task {
                 do {
                     let (stream, response) = try await bytes(for: request)
+                    print("[TranslationService] translation HTTP status \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                     guard let http = response as? HTTPURLResponse,
                           (200..<300).contains(http.statusCode) else {
                         throw URLError(.badServerResponse)
@@ -162,11 +167,13 @@ final class TranslationService: ObservableObject {
                         if let data = dataLine.data(using: .utf8),
                            let chunk = try? JSONDecoder().decode(ChatStreamChunk.self, from: data),
                            let token = chunk.choices.first?.delta.content {
+                            print("[TranslationService] token: \(token)")
                             continuation.yield(token)
                         }
                     }
                     continuation.finish()
                 } catch {
+                    print("[TranslationService] translation error: \(error)")
                     continuation.finish()
                 }
             }

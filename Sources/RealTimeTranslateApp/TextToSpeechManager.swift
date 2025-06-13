@@ -17,6 +17,8 @@ final class TextToSpeechManager {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = voice
 
+        print("[TTS] speaking with voice \(voice.language)")
+
         // Speak the utterance aloud immediately
         speakSynthesizer.stopSpeaking(at: .immediate)
         speakSynthesizer.speak(utterance)
@@ -26,6 +28,8 @@ final class TextToSpeechManager {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".wav")
         outputFile = try AVAudioFile(forWriting: url, settings: format.settings)
 
+        print("[TTS] writing speech to \(url)")
+
         return try await withCheckedThrowingContinuation { continuation in
             writeSynthesizer.write(utterance) { [weak self] buffer in
                 guard let self else { return }
@@ -33,12 +37,14 @@ final class TextToSpeechManager {
                     do {
                         try self.outputFile?.write(from: pcm)
                     } catch {
+                        print("[TTS] write error: \(error)")
                         continuation.resume(throwing: error)
                         self.outputFile = nil
                     }
                 } else {
                     // zero-length buffer indicates completion
                     self.outputFile = nil
+                    print("[TTS] finished writing to \(url)")
                     continuation.resume(returning: url)
                 }
             }
