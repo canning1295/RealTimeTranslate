@@ -252,3 +252,15 @@ Initial implementation includes:
 8. Add robust error handling and retry logic around all network calls.
 9. Polish the interface with waveform visualization and platform-specific design tweaks.
 10. Perform full end-to-end testing on both iOS and macOS.
+
+## Testing Strategy
+
+To ensure reliability across platforms, we will create a suite of unit and UI tests. Unit tests will verify audio processing logic and network request formatting. Integration tests will exercise the entire pipeline using mock services for Whisper and GPT so we can run them offline. On iOS, we will leverage XCTest's UI testing to confirm that streaming translations appear in real time and that controls respond correctly. Continuous integration will run all tests on each pull request.
+
+## Milestones and Timeline
+
+- **Week 1-2**: Finish network layer for transcription and translation.
+- **Week 3**: Implement the view model binding and real-time UI updates.
+- **Week 4**: Add TTS playback and begin storing conversation history.
+- **Week 5**: Complete settings and history screens and perform end-to-end testing.
+- **Week 6**: Polish the design, fix bugs, and prepare for App Store submission.
