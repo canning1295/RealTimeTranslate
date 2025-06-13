@@ -246,7 +246,7 @@ Initial implementation includes:
 
 1. ~~Implement network layer for Whisper API including multipart upload of audio files.~~ (done)
 2. ~~Streamline translation pipeline with real `URLSession` server-sent event parsing for GPT responses.~~ (done)
-3. Bind results to a dedicated view model so `ContentView` updates in real time.
+3. ~~Bind results to a dedicated view model so `ContentView` updates in real time.~~ (done)
 4. Develop `TextToSpeechManager` to play and store synthesized speech audio.
 5. Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.
 6. Create a settings screen for API key entry and language selection.
