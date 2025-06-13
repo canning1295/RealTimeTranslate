@@ -4,6 +4,16 @@ import Combine
 /// Handles communication with OpenAI's APIs for transcription and translation.
 /// This example focuses on function signatures and streaming parsing rather than real network calls.
 final class TranslationService: ObservableObject {
+    enum APIError: LocalizedError {
+        case missingAPIKey
+
+        var errorDescription: String? {
+            switch self {
+            case .missingAPIKey:
+                return "OpenAI API key is missing"
+            }
+        }
+    }
     struct Config {
         var apiKey: String
         var targetLanguage: String
@@ -24,14 +34,43 @@ final class TranslationService: ObservableObject {
         }
     }
 
+    private let maxRetries = 2
+
     init(config: Config) {
         self.config = config
+    }
+
+    private func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        var attempt = 0
+        while true {
+            do {
+                return try await URLSession.shared.data(for: request)
+            } catch {
+                attempt += 1
+                if attempt > maxRetries { throw error }
+                try await Task.sleep(for: .seconds(Double(attempt)))
+            }
+        }
+    }
+
+    private func bytes(for request: URLRequest) async throws -> (URLSession.AsyncBytes, URLResponse) {
+        var attempt = 0
+        while true {
+            do {
+                return try await URLSession.shared.bytes(for: request)
+            } catch {
+                attempt += 1
+                if attempt > maxRetries { throw error }
+                try await Task.sleep(for: .seconds(Double(attempt)))
+            }
+        }
     }
 
     // MARK: - Whisper
 
     /// Uploads audio data to Whisper for transcription and returns the recognized text.
     func transcribe(audioURL: URL) async throws -> String {
+        guard !config.apiKey.isEmpty else { throw APIError.missingAPIKey }
         let url = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
 
         var request = URLRequest(url: url)
@@ -62,7 +101,7 @@ final class TranslationService: ObservableObject {
 
         request.httpBody = body
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await data(for: request)
 
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
             throw URLError(.badServerResponse)
@@ -79,6 +118,10 @@ final class TranslationService: ObservableObject {
     /// Returns an `AsyncStream` of translation tokens as they arrive.
     func translate(text: String) -> AsyncStream<String> {
         AsyncStream { continuation in
+            guard !config.apiKey.isEmpty else {
+                continuation.finish()
+                return
+            }
             let url = URL(string: "https://api.openai.com/v1/chat/completions")!
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
@@ -104,7 +147,7 @@ final class TranslationService: ObservableObject {
 
             let task = Task {
                 do {
-                    let (stream, response) = try await URLSession.shared.bytes(for: request)
+                    let (stream, response) = try await bytes(for: request)
                     guard let http = response as? HTTPURLResponse,
                           (200..<300).contains(http.statusCode) else {
                         throw URLError(.badServerResponse)

@@ -9,6 +9,9 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
+            WaveformView(power: viewModel.inputPower)
+                .frame(height: 4)
+                .padding(.horizontal)
             List(viewModel.messages) { message in
                 VStack(alignment: .leading) {
                     Text(message.original)
@@ -16,6 +19,10 @@ struct ContentView: View {
                     Text(message.translated)
                         .font(.callout)
                         .foregroundColor(.blue)
+                    if message.audioURL != nil {
+                        Button("Play") { viewModel.play(message: message) }
+                            .buttonStyle(.bordered)
+                    }
                 }
             }
             .frame(minHeight: 200)
