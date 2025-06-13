@@ -30,13 +30,27 @@ final class AudioCaptureManager: ObservableObject {
         buffer = nil
         lastSpeechTime = CACurrentMediaTime()
 
+        let preStartFormat = inputNode.outputFormat(forBus: 0)
+        print("[AudioCaptureManager] format before start: \(preStartFormat.sampleRate)Hz channels:\(preStartFormat.channelCount)")
+
         // Start engine first so the input node's format matches the hardware
-        try engine.start()
-        recognitionFormat = inputNode.outputFormat(forBus: 0)
+        do {
+            try engine.start()
+        } catch {
+            print("[AudioCaptureManager] engine start failed: \(error)")
+            throw error
+        }
+
+        let postStartFormat = inputNode.outputFormat(forBus: 0)
+        print("[AudioCaptureManager] format after start: \(postStartFormat.sampleRate)Hz channels:\(postStartFormat.channelCount)")
+
+        recognitionFormat = postStartFormat
 
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recognitionFormat) { [weak self] pcmBuffer, _ in
             self?.process(buffer: pcmBuffer)
         }
+
+        print("[AudioCaptureManager] tap installed using sample rate \(recognitionFormat.sampleRate)")
     }
 
     /// Stops the audio engine and clears state.
@@ -44,6 +58,7 @@ final class AudioCaptureManager: ObservableObject {
         inputNode.removeTap(onBus: 0)
         engine.stop()
         buffer = nil
+        print("[AudioCaptureManager] stopped")
     }
 
     /// Process each incoming buffer, appending to the current chunk and emitting when silence is detected.
@@ -67,6 +82,7 @@ final class AudioCaptureManager: ObservableObject {
 
         if now - lastSpeechTime > silenceDuration {
             if let chunk = buffer {
+                print("[AudioCaptureManager] emitting chunk length \(chunk.frameLength)")
                 chunkPublisher.send(chunk)
             }
             self.buffer = nil

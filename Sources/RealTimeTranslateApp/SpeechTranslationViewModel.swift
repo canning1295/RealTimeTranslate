@@ -48,11 +48,17 @@ final class SpeechTranslationViewModel: ObservableObject {
             newSession.timestamp = Date()
             session = newSession
         }
-        try? audioManager.start()
+        do {
+            try audioManager.start()
+            print("[ViewModel] capture started")
+        } catch {
+            print("[ViewModel] failed to start capture: \(error)")
+        }
     }
 
     func stop() {
         audioManager.stop()
+        print("[ViewModel] capture stopped")
         saveContext()
     }
 
@@ -79,7 +85,9 @@ final class SpeechTranslationViewModel: ObservableObject {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".wav")
         do {
             try buffer.writeWAV(to: url)
+            print("[ViewModel] wrote chunk to \(url)")
             let text = try await service.transcribe(audioURL: url)
+            print("[ViewModel] transcription: \(text)")
             var message = Message(original: text)
             messages.append(message)
             guard let index = messages.firstIndex(where: { $0.id == message.id }) else { return }
@@ -101,7 +109,7 @@ final class SpeechTranslationViewModel: ObservableObject {
                 saveContext()
             }
         } catch {
-            // In a real app, handle error appropriately.
+            print("[ViewModel] error processing chunk: \(error)")
         }
         try? FileManager.default.removeItem(at: url)
     }
