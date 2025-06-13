@@ -227,7 +227,7 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 - [x] Add real-time UI updates showing transcribed and translated text.
 - [x] Implement TTS playback with language detection and audio saving.
 - [ ] Add data storage (Core Data and audio files) for conversations.
-- [ ] Implement settings view for API key and language options.
+- [x] Implement settings view for API key and language options.
 - [ ] Implement history view to browse past conversations.
 - [ ] Add comprehensive error handling and retries for network/API failures.
 - [ ] Polish UI/UX with waveform indicator and playback controls.
@@ -242,6 +242,7 @@ Initial implementation includes:
 * Added network layer for Whisper API with multipart upload support.
 * Implemented streaming translation via GPT-4o Mini using URLSession SSE parsing.
 * Added `TextToSpeechManager` for speaking translations and saving them to audio files.
+* Added `SettingsView` allowing API key entry and language selection.
 
 ## Next Steps
 
@@ -250,7 +251,7 @@ Initial implementation includes:
 3. ~~Bind results to a dedicated view model so `ContentView` updates in real time.~~ (done)
 4. ~~Develop `TextToSpeechManager` to play and store synthesized speech audio.~~ (done)
 5. ~~Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.~~ (done)
-6. Create a settings screen for API key entry and language selection.
+6. ~~Create a settings screen for API key entry and language selection.~~ (done)
 7. Build a history interface showing past sessions with playback controls.
 8. Add robust error handling and retry logic around all network calls.
 9. Polish the interface with waveform visualization and platform-specific design tweaks.
