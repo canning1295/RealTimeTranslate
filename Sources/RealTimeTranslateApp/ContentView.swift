@@ -5,6 +5,7 @@ struct ContentView: View {
         service: TranslationService(config: .load())
     )
     @State private var showingSettings = false
+    @State private var showingHistory = false
 
     var body: some View {
         VStack {
@@ -27,10 +28,15 @@ struct ContentView: View {
         }
         .padding()
         .toolbar {
+            Button("History") { showingHistory = true }
             Button("Settings") { showingSettings = true }
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView(service: viewModel.service)
+        }
+        .sheet(isPresented: $showingHistory) {
+            HistoryView()
+                .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
         }
     }
 }
