@@ -30,10 +30,13 @@ final class AudioCaptureManager: ObservableObject {
         buffer = nil
         lastSpeechTime = CACurrentMediaTime()
 
+        // Start engine first so the input node's format matches the hardware
+        try engine.start()
+        recognitionFormat = inputNode.outputFormat(forBus: 0)
+
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recognitionFormat) { [weak self] pcmBuffer, _ in
             self?.process(buffer: pcmBuffer)
         }
-        try engine.start()
     }
 
     /// Stops the audio engine and clears state.
