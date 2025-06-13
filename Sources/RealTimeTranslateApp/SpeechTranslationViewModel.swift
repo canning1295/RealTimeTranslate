@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import Combine
 import SwiftUI
+import CoreData
 
 /// View model coordinating audio capture and translation.
 @MainActor
@@ -20,6 +21,9 @@ final class SpeechTranslationViewModel: ObservableObject {
     private let tts = TextToSpeechManager()
     private var cancellables: Set<AnyCancellable> = []
 
+    private let context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
+    private var session: ConversationSession?
+
     init(service: TranslationService) {
         self.service = service
 
@@ -32,11 +36,26 @@ final class SpeechTranslationViewModel: ObservableObject {
     }
 
     func start() {
+        if session == nil {
+            let newSession = ConversationSession(context: context)
+            newSession.id = UUID()
+            newSession.timestamp = Date()
+            session = newSession
+        }
         try? audioManager.start()
     }
 
     func stop() {
         audioManager.stop()
+        saveContext()
+    }
+
+    private func saveContext() {
+        do {
+            try context.save()
+        } catch {
+            print("Core Data save error: \(error)")
+        }
     }
 
     private func handleChunk(_ buffer: AVAudioPCMBuffer) async {
@@ -54,6 +73,16 @@ final class SpeechTranslationViewModel: ObservableObject {
 
             let ttsURL = try await tts.speak(text: messages[index].translated, language: service.config.targetLanguage)
             messages[index].audioURL = ttsURL
+
+            if let session {
+                let utt = Utterance(context: context)
+                utt.id = message.id
+                utt.original = message.original
+                utt.translated = messages[index].translated
+                utt.audioPath = ttsURL.path
+                utt.session = session
+                saveContext()
+            }
         } catch {
             // In a real app, handle error appropriately.
         }

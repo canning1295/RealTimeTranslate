@@ -249,7 +249,7 @@ Initial implementation includes:
 2. ~~Streamline translation pipeline with real `URLSession` server-sent event parsing for GPT responses.~~ (done)
 3. ~~Bind results to a dedicated view model so `ContentView` updates in real time.~~ (done)
 4. ~~Develop `TextToSpeechManager` to play and store synthesized speech audio.~~ (done)
-5. Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.
+5. ~~Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.~~ (done)
 6. Create a settings screen for API key entry and language selection.
 7. Build a history interface showing past sessions with playback controls.
 8. Add robust error handling and retry logic around all network calls.
