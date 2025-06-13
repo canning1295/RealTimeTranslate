@@ -224,8 +224,8 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 - [x] Implement audio capture with VAD and chunking of speech.
 - [x] Integrate Whisper API for transcription of each audio chunk.
 - [x] Implement translation via GPT-4o Mini with streaming response parsing.
-- [ ] Add real-time UI updates showing transcribed and translated text.
-- [ ] Implement TTS playback with language detection and audio saving.
+- [x] Add real-time UI updates showing transcribed and translated text.
+- [x] Implement TTS playback with language detection and audio saving.
 - [ ] Add data storage (Core Data and audio files) for conversations.
 - [ ] Implement settings view for API key and language options.
 - [ ] Implement history view to browse past conversations.
@@ -241,13 +241,14 @@ Initial implementation includes:
 * Skeleton `TranslationService` outlining Whisper transcription and GPT-based translation methods.
 * Added network layer for Whisper API with multipart upload support.
 * Implemented streaming translation via GPT-4o Mini using URLSession SSE parsing.
+* Added `TextToSpeechManager` for speaking translations and saving them to audio files.
 
 ## Next Steps
 
 1. ~~Implement network layer for Whisper API including multipart upload of audio files.~~ (done)
 2. ~~Streamline translation pipeline with real `URLSession` server-sent event parsing for GPT responses.~~ (done)
 3. ~~Bind results to a dedicated view model so `ContentView` updates in real time.~~ (done)
-4. Develop `TextToSpeechManager` to play and store synthesized speech audio.
+4. ~~Develop `TextToSpeechManager` to play and store synthesized speech audio.~~ (done)
 5. Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.
 6. Create a settings screen for API key entry and language selection.
 7. Build a history interface showing past sessions with playback controls.
