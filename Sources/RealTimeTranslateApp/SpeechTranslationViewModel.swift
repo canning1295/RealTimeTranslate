@@ -10,12 +10,14 @@ final class SpeechTranslationViewModel: ObservableObject {
         let id = UUID()
         let original: String
         var translated: String = ""
+        var audioURL: URL?
     }
 
     @Published var messages: [Message] = []
 
     private let audioManager = AudioCaptureManager()
     private let service: TranslationService
+    private let tts = TextToSpeechManager()
     private var cancellables: Set<AnyCancellable> = []
 
     init(service: TranslationService) {
@@ -49,6 +51,9 @@ final class SpeechTranslationViewModel: ObservableObject {
             for await token in service.translate(text: text) {
                 messages[index].translated += token
             }
+
+            let ttsURL = try await tts.speak(text: messages[index].translated, language: service.config.targetLanguage)
+            messages[index].audioURL = ttsURL
         } catch {
             // In a real app, handle error appropriately.
         }
