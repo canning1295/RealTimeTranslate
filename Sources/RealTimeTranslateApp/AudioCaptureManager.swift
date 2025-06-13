@@ -72,9 +72,27 @@ final class AudioCaptureManager: ObservableObject {
         if buffer == nil {
             buffer = AVAudioPCMBuffer(pcmFormat: recognitionFormat, frameCapacity: 8192)
             buffer?.frameLength = 0
+            if let buffer { print("[AudioCaptureManager] created buffer capacity \(buffer.frameCapacity)") }
         }
 
-        buffer?.append(pcmBuffer)
+        if let buffer {
+            let incoming = pcmBuffer.frameLength
+            if buffer.frameLength + incoming > buffer.frameCapacity {
+                let newCapacity = max(buffer.frameCapacity * 2, buffer.frameLength + incoming)
+                print("[AudioCaptureManager] expanding buffer to capacity \(newCapacity)")
+                if let newBuffer = AVAudioPCMBuffer(pcmFormat: recognitionFormat, frameCapacity: newCapacity) {
+                    newBuffer.frameLength = buffer.frameLength
+                    if let dst = newBuffer.floatChannelData, let src = buffer.floatChannelData {
+                        let frames = Int(buffer.frameLength)
+                        for channel in 0..<Int(recognitionFormat.channelCount) {
+                            dst[channel].assign(from: src[channel], count: frames)
+                        }
+                    }
+                    self.buffer = newBuffer
+                }
+            }
+            self.buffer?.append(pcmBuffer)
+        }
 
         if power > silenceThreshold {
             lastSpeechTime = now
