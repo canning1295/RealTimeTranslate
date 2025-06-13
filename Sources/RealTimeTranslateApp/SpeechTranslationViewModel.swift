@@ -15,11 +15,13 @@ final class SpeechTranslationViewModel: ObservableObject {
     }
 
     @Published var messages: [Message] = []
+    @Published var inputPower: Float = -100
 
     private let audioManager = AudioCaptureManager()
     let service: TranslationService
     private let tts = TextToSpeechManager()
     private var cancellables: Set<AnyCancellable> = []
+    private var audioPlayer: AVAudioPlayer?
 
     private let context: NSManagedObjectContext = PersistenceController.shared.container.viewContext
     private var session: ConversationSession?
@@ -33,6 +35,10 @@ final class SpeechTranslationViewModel: ObservableObject {
                 Task { await self?.handleChunk(buffer) }
             }
             .store(in: &cancellables)
+
+        audioManager.$powerLevel
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$inputPower)
     }
 
     func start() {
@@ -48,6 +54,17 @@ final class SpeechTranslationViewModel: ObservableObject {
     func stop() {
         audioManager.stop()
         saveContext()
+    }
+
+    func play(message: Message) {
+        guard let url = message.audioURL else { return }
+        audioPlayer?.stop()
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+        } catch {
+            print("Audio playback error: \(error)")
+        }
     }
 
     private func saveContext() {

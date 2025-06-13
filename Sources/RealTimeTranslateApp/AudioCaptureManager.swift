@@ -7,6 +7,8 @@ import Accelerate
 final class AudioCaptureManager: ObservableObject {
     /// Publisher emitting captured audio chunks ready for transcription.
     let chunkPublisher = PassthroughSubject<AVAudioPCMBuffer, Never>()
+    /// Current input power level in dB, published for a waveform view.
+    @Published var powerLevel: Float = -100
 
     private let engine = AVAudioEngine()
     private let inputNode: AVAudioInputNode
@@ -44,6 +46,9 @@ final class AudioCaptureManager: ObservableObject {
     /// Process each incoming buffer, appending to the current chunk and emitting when silence is detected.
     private func process(buffer pcmBuffer: AVAudioPCMBuffer) {
         let power = pcmBuffer.averagePower
+        DispatchQueue.main.async { [weak self] in
+            self?.powerLevel = power
+        }
         let now = CACurrentMediaTime()
 
         if buffer == nil {
