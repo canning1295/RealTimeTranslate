@@ -13,11 +13,13 @@ final class TextToSpeechManager {
     /// - Returns: The file URL of the saved WAV audio.
     @MainActor
     func speak(text: String, language: String) async throws -> URL {
-        let voice = AVSpeechSynthesisVoice(language: language) ?? AVSpeechSynthesisVoice(language: "en-US")
+        let voice = AVSpeechSynthesisVoice(language: language) ??
+            AVSpeechSynthesisVoice(language: "en-US")
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = voice
 
-        print("[TTS] speaking with voice \(voice.language)")
+        let voiceLanguage = voice?.language ?? "unknown"
+        print("[TTS] speaking with voice \(voiceLanguage)")
 
         // Speak the utterance aloud immediately
         speakSynthesizer.stopSpeaking(at: .immediate)
