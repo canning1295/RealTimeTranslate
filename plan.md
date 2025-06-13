@@ -223,7 +223,7 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 - [x] Set up project structure and basic SwiftUI app for iOS/macOS.
 - [x] Implement audio capture with VAD and chunking of speech.
 - [x] Integrate Whisper API for transcription of each audio chunk.
-- [ ] Implement translation via GPT-4o Mini with streaming response parsing.
+- [x] Implement translation via GPT-4o Mini with streaming response parsing.
 - [ ] Add real-time UI updates showing transcribed and translated text.
 - [ ] Implement TTS playback with language detection and audio saving.
 - [ ] Add data storage (Core Data and audio files) for conversations.
@@ -240,11 +240,12 @@ Initial implementation includes:
 * `AudioCaptureManager` providing microphone capture with simple VAD and chunk publishing.
 * Skeleton `TranslationService` outlining Whisper transcription and GPT-based translation methods.
 * Added network layer for Whisper API with multipart upload support.
+* Implemented streaming translation via GPT-4o Mini using URLSession SSE parsing.
 
 ## Next Steps
 
 1. ~~Implement network layer for Whisper API including multipart upload of audio files.~~ (done)
-2. Streamline translation pipeline with real `URLSession` server-sent event parsing for GPT responses.
+2. ~~Streamline translation pipeline with real `URLSession` server-sent event parsing for GPT responses.~~ (done)
 3. Bind results to a dedicated view model so `ContentView` updates in real time.
 4. Develop `TextToSpeechManager` to play and store synthesized speech audio.
 5. Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.

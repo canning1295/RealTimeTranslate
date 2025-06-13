@@ -63,17 +63,71 @@ final class TranslationService {
     // MARK: - Translation
 
     /// Sends text to ChatGPT for translation using streaming SSE.
-    /// Returns an AsyncStream of translation tokens as they arrive.
+    /// Returns an `AsyncStream` of translation tokens as they arrive.
     func translate(text: String) -> AsyncStream<String> {
         AsyncStream { continuation in
-            // Placeholder network call. Replace with real streaming logic.
-            // For example, we might create a URLRequest to /v1/chat/completions
-            // and parse the SSE events from URLSession's bytes sequence.
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
-                continuation.yield("[translation stub]")
+            let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.addValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+
+            let body: [String: Any] = [
+                "model": "gpt-4o",
+                "stream": true,
+                "temperature": 0,
+                "messages": [
+                    ["role": "system", "content": "You are a translation assistant. Translate everything to \(config.targetLanguage)."],
+                    ["role": "user", "content": text]
+                ]
+            ]
+
+            do {
+                request.httpBody = try JSONSerialization.data(withJSONObject: body)
+            } catch {
                 continuation.finish()
+                return
+            }
+
+            let task = Task {
+                do {
+                    let (stream, response) = try await URLSession.shared.bytes(for: request)
+                    guard let http = response as? HTTPURLResponse,
+                          (200..<300).contains(http.statusCode) else {
+                        throw URLError(.badServerResponse)
+                    }
+
+                    for try await line in stream.lines {
+                        guard line.hasPrefix("data:") else { continue }
+                        let dataLine = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
+                        if dataLine == "[DONE]" {
+                            break
+                        }
+                        if let data = dataLine.data(using: .utf8),
+                           let chunk = try? JSONDecoder().decode(ChatStreamChunk.self, from: data),
+                           let token = chunk.choices.first?.delta.content {
+                            continuation.yield(token)
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish()
+                }
+            }
+
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
             }
         }
+    }
+
+    /// Minimal model for decoding streaming chat completion events.
+    private struct ChatStreamChunk: Decodable {
+        struct Choice: Decodable {
+            struct Delta: Decodable { let content: String? }
+            let delta: Delta
+        }
+        let choices: [Choice]
     }
 }
 
