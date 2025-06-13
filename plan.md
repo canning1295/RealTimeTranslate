@@ -220,8 +220,8 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 
 ## Checklist
 
- - [x] Set up project structure and basic SwiftUI app for iOS/macOS.
-- [ ] Implement audio capture with VAD and chunking of speech.
+- [x] Set up project structure and basic SwiftUI app for iOS/macOS.
+- [x] Implement audio capture with VAD and chunking of speech.
 - [ ] Integrate Whisper API for transcription of each audio chunk.
 - [ ] Implement translation via GPT-4o Mini with streaming response parsing.
 - [ ] Add real-time UI updates showing transcribed and translated text.
@@ -232,3 +232,10 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 - [ ] Add comprehensive error handling and retries for network/API failures.
 - [ ] Polish UI/UX with waveform indicator and playback controls.
 - [ ] Final testing across iOS and macOS.
+
+## Implementation Progress
+
+Initial implementation includes:
+* Basic SwiftUI app skeleton.
+* `AudioCaptureManager` providing microphone capture with simple VAD and chunk publishing.
+* Skeleton `TranslationService` outlining Whisper transcription and GPT-based translation methods.
