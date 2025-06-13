@@ -17,7 +17,7 @@ final class SpeechTranslationViewModel: ObservableObject {
     @Published var messages: [Message] = []
 
     private let audioManager = AudioCaptureManager()
-    private let service: TranslationService
+    let service: TranslationService
     private let tts = TextToSpeechManager()
     private var cancellables: Set<AnyCancellable> = []
 

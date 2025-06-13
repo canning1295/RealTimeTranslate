@@ -3,13 +3,26 @@ import Combine
 
 /// Handles communication with OpenAI's APIs for transcription and translation.
 /// This example focuses on function signatures and streaming parsing rather than real network calls.
-final class TranslationService {
+final class TranslationService: ObservableObject {
     struct Config {
         var apiKey: String
         var targetLanguage: String
+
+        static func load() -> Config {
+            let defaults = UserDefaults.standard
+            let key = defaults.string(forKey: "apiKey") ?? ""
+            let language = defaults.string(forKey: "targetLanguage") ?? "French"
+            return .init(apiKey: key, targetLanguage: language)
+        }
     }
 
-    @Published var config: Config
+    @Published var config: Config {
+        didSet {
+            let defaults = UserDefaults.standard
+            defaults.set(config.apiKey, forKey: "apiKey")
+            defaults.set(config.targetLanguage, forKey: "targetLanguage")
+        }
+    }
 
     init(config: Config) {
         self.config = config

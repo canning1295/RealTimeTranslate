@@ -2,10 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = SpeechTranslationViewModel(
-        service: TranslationService(
-            config: .init(apiKey: "YOUR_API_KEY", targetLanguage: "French")
-        )
+        service: TranslationService(config: .load())
     )
+    @State private var showingSettings = false
 
     var body: some View {
         VStack {
@@ -27,6 +26,12 @@ struct ContentView: View {
             .padding()
         }
         .padding()
+        .toolbar {
+            Button("Settings") { showingSettings = true }
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView(service: viewModel.service)
+        }
     }
 }
 
