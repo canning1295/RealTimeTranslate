@@ -226,9 +226,9 @@ In summary, robust error handling is built-in at each stage, with user-friendly 
 - [x] Implement translation via GPT-4o Mini with streaming response parsing.
 - [x] Add real-time UI updates showing transcribed and translated text.
 - [x] Implement TTS playback with language detection and audio saving.
-- [ ] Add data storage (Core Data and audio files) for conversations.
+- [x] Add data storage (Core Data and audio files) for conversations.
 - [x] Implement settings view for API key and language options.
-- [ ] Implement history view to browse past conversations.
+- [x] Implement history view to browse past conversations.
 - [ ] Add comprehensive error handling and retries for network/API failures.
 - [ ] Polish UI/UX with waveform indicator and playback controls.
 - [ ] Final testing across iOS and macOS.
@@ -252,7 +252,7 @@ Initial implementation includes:
 4. ~~Develop `TextToSpeechManager` to play and store synthesized speech audio.~~ (done)
 5. ~~Set up Core Data models (`ConversationSession` and `Utterance`) to persist conversations incrementally.~~ (done)
 6. ~~Create a settings screen for API key entry and language selection.~~ (done)
-7. Build a history interface showing past sessions with playback controls.
+7. ~~Build a history interface showing past sessions with playback controls.~~ (done)
 8. Add robust error handling and retry logic around all network calls.
 9. Polish the interface with waveform visualization and platform-specific design tweaks.
 10. Perform full end-to-end testing on both iOS and macOS.

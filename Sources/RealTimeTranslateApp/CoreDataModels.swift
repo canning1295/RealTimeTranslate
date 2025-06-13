@@ -15,3 +15,6 @@ class Utterance: NSManagedObject {
     @NSManaged var audioPath: String?
     @NSManaged var session: ConversationSession
 }
+
+extension ConversationSession: Identifiable {}
+extension Utterance: Identifiable {}
