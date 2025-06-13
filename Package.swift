@@ -13,7 +13,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "RealTimeTranslateApp",
-            path: "Sources/RealTimeTranslateApp"
+            path: "Sources/RealTimeTranslateApp",
+            resources: [
+                .copy("Info.plist")
+            ]
         )
     ]
 )
